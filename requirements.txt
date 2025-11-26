@@ -1,0 +1,23 @@
+# Llama-3.2-3B Fine-Tuning Requirements
+# Optimized for Windows + RTX 4060 (8GB VRAM)
+
+# Core dependencies
+transformers==4.46.3
+peft==0.12.0
+trl==0.11.4
+datasets==3.1.0
+accelerate==1.1.1
+
+# Quantization & optimization
+bitsandbytes==0.44.1
+scipy>=1.11.0
+
+# PyTorch (install separately if needed)
+# Visit: https://pytorch.org/get-started/locally/
+# For CUDA 12.1: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+torch>=2.1.0
+
+# Utilities
+numpy>=1.24.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
