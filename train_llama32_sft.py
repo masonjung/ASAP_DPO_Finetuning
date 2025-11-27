@@ -1,20 +1,10 @@
-"""
-Llama-3.2-3B Supervised Fine-Tuning (SFT) with QLoRA
-
-This script fine-tunes Llama-3.2-3B-Instruct using:
-- QLoRA (4-bit quantization + LoRA adapters)
-- Custom or Hugging Face datasets
-- Optimized for RTX 4060 (8GB VRAM)
-
-Usage:
-    python train_llama32_sft.py
-
-Configuration is loaded from config.json
-"""
-
 import os
 import json
 import torch
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -26,17 +16,32 @@ from trl import SFTTrainer
 from utils import load_training_dataset, get_tokenizer
 
 
+def load_secrets(secrets_path: str = "secrets.toml") -> dict:
+    """Load secrets from TOML file."""
+    if os.path.exists(secrets_path):
+        with open(secrets_path, "rb") as f:
+            secrets = tomllib.load(f)
+        print("✅ Secrets loaded from secrets.toml")
+        return secrets
+    return {}
+
+
 def resolve_hf_token(config: dict) -> str | None:
-    """Return an explicit HF token (env or config) and sync env vars for gated repos."""
+    """Return an explicit HF token (env, secrets.toml, or config) and sync env vars for gated repos."""
+    # Load from secrets.toml first
+    secrets = load_secrets()
+    
     token = (
         os.environ.get("HF_TOKEN")
         or os.environ.get("HUGGINGFACEHUB_API_TOKEN")
+        or secrets.get("huggingface", {}).get("token")
         or config.get("hf_token")
     )
 
     if token:
         os.environ.setdefault("HF_TOKEN", token)
         os.environ.setdefault("HUGGINGFACEHUB_API_TOKEN", token)
+        print("✅ HuggingFace token configured")
 
     return token
 
@@ -146,7 +151,6 @@ def setup_training_args(config: dict) -> TrainingArguments:
         gradient_checkpointing=config["gradient_checkpointing"],
         report_to="none",  # Disable wandb, tensorboard, etc.
         push_to_hub=False,
-        remove_unused_columns=False
     )
     print("✅ Training arguments configured")
     return training_args
@@ -155,7 +159,7 @@ def setup_training_args(config: dict) -> TrainingArguments:
 def main():
     """Main training pipeline."""
     print("\n" + "="*60)
-    print("🚀 Starting Llama-3.2-3B SFT Training with QLoRA")
+    print("🚀 Starting Llama-3.2-1B SFT Training with QLoRA")
     print("="*60 + "\n")
     
     # Step 1: Load configuration
@@ -201,18 +205,30 @@ def main():
     print("\n📋 Step 7/7: Setting up trainer...")
     training_args = setup_training_args(config)
     
-    # Determine formatting function
+    # Determine formatting function and prepare dataset
     from utils.formatting import get_formatting_func
     formatting_func = get_formatting_func(dataset_name)
+    
+    # Format dataset - add "text" column with formatted prompts
+    def format_dataset(examples):
+        texts = formatting_func(examples)
+        return {"text": texts}
+    
+    formatted_dataset = dataset.map(
+        format_dataset,
+        batched=True,
+        remove_columns=dataset.column_names
+    )
+    print(f"✅ Dataset formatted: {len(formatted_dataset)} examples")
     
     # Create trainer
     trainer = SFTTrainer(
         model=model,
-        train_dataset=dataset,
+        train_dataset=formatted_dataset,
         tokenizer=tokenizer,
         args=training_args,
         max_seq_length=config["max_seq_length"],
-        formatting_func=formatting_func,
+        dataset_text_field="text",
         packing=False  # Disable packing for simplicity
     )
     

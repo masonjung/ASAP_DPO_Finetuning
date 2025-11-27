@@ -48,3 +48,6 @@ huggingface/
 # Environment
 .env
 .env.local
+
+# Secrets
+secrets.toml

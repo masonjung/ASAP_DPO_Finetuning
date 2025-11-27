@@ -13,7 +13,7 @@ from peft import PeftModel
 
 
 def load_model_and_tokenizer(
-    base_model_name: str = "meta-llama/Llama-3.2-3B-Instruct",
+    base_model_name: str = "meta-llama/Llama-3.2-1B-Instruct",
     adapter_path: str = "./output_llama32_sft",
     load_in_4bit: bool = True
 ):
@@ -125,7 +125,7 @@ def generate_response(
 def main():
     """Main inference loop."""
     print("\n" + "="*60)
-    print("🤖 Llama-3.2-3B Fine-Tuned Inference")
+    print("🤖 Llama-3.2-1B Fine-Tuned Inference")
     print("="*60 + "\n")
     
     # Load model
