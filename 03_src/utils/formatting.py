@@ -24,8 +24,8 @@ def format_instruction_response(instruction: str, response: str) -> str:
 {response.strip()}"""
 
 
-def format_dolly_example(examples: dict) -> list:
-    """Return a list of formatted Dolly prompts for SFTTrainer."""
+def format_dolly_example(examples: dict) -> dict:
+    """Return formatted Dolly prompts for SFTTrainer."""
     instructions = examples.get("instruction", [])
     contexts = examples.get("context", [])
     responses = examples.get("response", [])
@@ -47,15 +47,15 @@ def format_dolly_example(examples: dict) -> list:
             format_instruction_response(full_instruction, str(response))
         )
 
-    return formatted_texts
+    return {"text": formatted_texts}
 
 
-def format_custom_example(example: dict) -> list:
-    """Return a single formatted prompt for custom datasets."""
+def format_custom_example(example: dict) -> dict:
+    """Return a formatted prompt for custom datasets."""
     instruction = example.get("instruction", "")
     response = example.get("response", "")
 
-    return [format_instruction_response(instruction, response)]
+    return {"text": format_instruction_response(instruction, response)}
 
 
 def get_formatting_func(dataset_name: str):

@@ -10,6 +10,7 @@ ENV/
 .venv
 
 # Training outputs
+04_models/
 output_llama32_sft/
 merged_model/
 checkpoints/
@@ -18,6 +19,7 @@ runs/
 *.safetensors
 
 # Logs
+05_logs/
 *.log
 wandb/
 tensorboard/
@@ -38,8 +40,8 @@ Thumbs.db
 huggingface/
 
 # Don't ignore sample data
-!dataset/sample.jsonl
-!dataset/custom_data.jsonl
+!02_data/raw/sample.jsonl
+!02_data/eval/eval_prompts.jsonl
 
 # Jupyter
 .ipynb_checkpoints/
@@ -50,4 +52,4 @@ huggingface/
 .env.local
 
 # Secrets
-secrets.toml
+01_configs/secrets.toml
