@@ -2,7 +2,7 @@
 Monitor training progress by tailing the logs.
 
 Usage:
-    python 03_src/monitor_training.py [optional_log_path]
+    python 02_src/monitor_training.py [optional_log_path]
 """
 
 import sys
@@ -12,7 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOGS = [
     REPO_ROOT / "05_logs" / "training.log",
-    REPO_ROOT / "04_models" / "adapters" / "output_llama32_sft" / "training.log",
+    REPO_ROOT / "04_models" / "adapters" / "output_dpo" / "training.log",
     REPO_ROOT / "training.log",
 ]
 
@@ -38,9 +38,9 @@ def monitor_training(log_file: str | None = None):
     if not log_path:
         print("No log file found. Training might not have started yet.")
         print("\nTip: Run training with logging, e.g.:")
-        print("  python 03_src/train_llama32_sft.py 2>&1 | tee 05_logs/training.log")
+        print("  python 02_src/train_dpo.py 2>&1 | tee 05_logs/training.log")
         print("\nThen in another terminal:")
-        print("  python 03_src/monitor_training.py")
+        print("  python 02_src/monitor_training.py")
         return
 
     print(f"Found log: {log_path}\n")

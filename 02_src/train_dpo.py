@@ -9,14 +9,15 @@ try:
     import tomllib
 except ModuleNotFoundError:
     import tomli as tomllib
-from transformers import AutoModelForCausalLM, TrainingArguments, BitsAndBytesConfig
+from transformers import AutoModelForCausalLM, BitsAndBytesConfig
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-from trl import SFTTrainer
-from utils import load_training_dataset, get_tokenizer, prepare_dataset_for_training
+from trl import DPOConfig, DPOTrainer
+
+from utils import load_training_dataset, get_tokenizer, prepare_dataset_for_dpo
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CONFIG_PATH = REPO_ROOT / "01_configs" / "config.json"
-DEFAULT_SECRETS_PATH = REPO_ROOT / "01_configs" / "secrets.toml"
+DEFAULT_CONFIG_PATH = REPO_ROOT / "00_configs" / "dpo.json"
+DEFAULT_SECRETS_PATH = REPO_ROOT / "00_configs" / "secrets.toml"
 
 
 def load_secrets(secrets_path: Path = DEFAULT_SECRETS_PATH) -> dict:
@@ -103,9 +104,9 @@ def setup_lora_config(config: dict) -> LoraConfig:
     return lora_config
 
 
-def prepare_model_for_training(model, lora_config: LoraConfig):
-    """Prepare model for QLoRA training."""
-    print("Preparing model for training...")
+def prepare_policy_model_for_training(model, lora_config: LoraConfig):
+    """Prepare model for QLoRA DPO training."""
+    print("Preparing policy model for training...")
 
     model.gradient_checkpointing_enable()
     model = prepare_model_for_kbit_training(model)
@@ -114,15 +115,15 @@ def prepare_model_for_training(model, lora_config: LoraConfig):
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     total_params = sum(p.numel() for p in model.parameters())
     pct = 100 * trainable_params / total_params
-    print(f"Model ready for training")
+    print(f"Policy model ready")
     print(f"Trainable params: {trainable_params:,} / {total_params:,} ({pct:.2f}%)")
 
     return model
 
 
-def setup_training_args(config: dict) -> TrainingArguments:
-    """Configure training arguments."""
-    training_args = TrainingArguments(
+def setup_training_args(config: dict) -> DPOConfig:
+    """Configure training arguments for DPOTrainer."""
+    training_args = DPOConfig(
         output_dir=config["output_dir"],
         num_train_epochs=config["num_train_epochs"],
         per_device_train_batch_size=config["per_device_train_batch_size"],
@@ -142,6 +143,10 @@ def setup_training_args(config: dict) -> TrainingArguments:
         push_to_hub=False,
         seed=config.get("seed", 42),
         dataloader_num_workers=config.get("dataloader_num_workers", 0),
+        remove_unused_columns=False,  # Needed for DPOTrainer
+        max_length=config["max_seq_length"],
+        max_prompt_length=config.get("max_prompt_length", config["max_seq_length"]),
+        max_target_length=config.get("max_target_length", max(256, config["max_seq_length"] // 2)),
     )
     print("Training arguments configured")
     return training_args
@@ -157,20 +162,20 @@ def set_reproducibility(seed: int):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Train Llama-3.2-1B with QLoRA.")
+    parser = argparse.ArgumentParser(description="Train Llama-3.2-1B with QLoRA + DPO.")
     parser.add_argument("--config", type=str, default=str(DEFAULT_CONFIG_PATH), help="Path to config JSON.")
     return parser.parse_args()
 
 
 def main():
-    """Main training pipeline."""
+    """Main DPO training pipeline."""
     args = parse_args()
 
     print("\n" + "=" * 60)
-    print("Starting Llama-3.2-1B SFT Training with QLoRA")
+    print("Starting Llama-3.2-1B DPO Training with QLoRA")
     print("=" * 60 + "\n")
 
-    print("Step 1/7: Loading configuration...")
+    print("Step 1/8: Loading configuration...")
     config = load_config(args.config)
     seed = config.get("seed", 42)
     set_reproducibility(seed)
@@ -178,20 +183,20 @@ def main():
     if not hf_token:
         print("No HF token detected. Public gated models (like Llama-3.2) require one.")
 
-    print("\nStep 2/7: Setting up 4-bit quantization...")
+    print("\nStep 2/8: Setting up 4-bit quantization...")
     bnb_config = setup_bnb_config(config)
 
-    print("\nStep 3/7: Loading base model...")
-    model = load_base_model(config["model_name"], bnb_config, hf_token)
+    print("\nStep 3/8: Loading policy model...")
+    policy_model = load_base_model(config["model_name"], bnb_config, hf_token)
 
-    print("\nStep 4/7: Loading tokenizer...")
+    print("\nStep 4/8: Loading tokenizer...")
     tokenizer = get_tokenizer(
         config["model_name"],
         config["max_seq_length"],
         token=hf_token,
     )
 
-    print("\nStep 5/7: Loading and preparing dataset...")
+    print("\nStep 5/8: Loading and preparing dataset...")
     dataset = load_training_dataset(
         config["dataset_hf"],
         split=config.get("dataset_split", "train"),
@@ -203,61 +208,67 @@ def main():
 
     dataset_name = config["dataset_hf"]
     if "dolly" in dataset_name.lower():
-        print("Using Dolly formatting")
+        print("Using Dolly formatting for DPO")
     else:
-        print("Using custom formatting")
+        print("Using custom formatting for DPO")
 
-    print("\nStep 6/7: Setting up LoRA...")
+    print("\nStep 6/8: Setting up LoRA...")
     lora_config = setup_lora_config(config)
-    model = prepare_model_for_training(model, lora_config)
+    policy_model = prepare_policy_model_for_training(policy_model, lora_config)
 
-    print("\nStep 7/7: Setting up trainer...")
+    print("\nStep 7/8: Loading reference model...")
+    ref_model = load_base_model(config["model_name"], bnb_config, hf_token)
+    ref_model.eval()
+    for param in ref_model.parameters():
+        param.requires_grad = False
+
+    print("\nStep 8/8: Setting up DPO trainer...")
     training_args = setup_training_args(config)
 
-    formatted_dataset = prepare_dataset_for_training(
+    formatted_dataset = prepare_dataset_for_dpo(
         dataset,
-        tokenizer=tokenizer,
-        max_seq_length=config["max_seq_length"],
         dataset_name=dataset_name,
         num_proc=config.get("num_proc"),
     )
-    print(f"Dataset formatted: {len(formatted_dataset)} examples")
+    if len(formatted_dataset) == 0:
+        raise ValueError("No DPO pairs found after formatting. Ensure your dataset has chosen/rejected responses.")
+    print(f"Dataset formatted for DPO: {len(formatted_dataset)} examples")
 
-    trainer = SFTTrainer(
-        model=model,
+    beta = float(config.get("dpo_beta", 0.1))
+
+    trainer = DPOTrainer(
+        model=policy_model,
+        ref_model=ref_model,
+        beta=beta,
         train_dataset=formatted_dataset,
         tokenizer=tokenizer,
         args=training_args,
-        max_seq_length=config["max_seq_length"],
-        dataset_text_field="text",
-        packing=False,  # Disable packing for simplicity
     )
 
-    print("Trainer ready")
+    print("DPO trainer ready")
 
     print("\n" + "=" * 60)
-    print("Starting training...")
+    print("Starting DPO training...")
     print("=" * 60 + "\n")
 
     trainer.train()
 
     print("\n" + "=" * 60)
-    print("Saving model...")
+    print("Saving policy LoRA adapter and tokenizer...")
     print("=" * 60 + "\n")
 
     Path(config["output_dir"]).mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(config["output_dir"])
+    policy_model.save_pretrained(config["output_dir"])
     tokenizer.save_pretrained(config["output_dir"])
 
     print("\n" + "=" * 60)
-    print("Training complete!")
-    print(f"Model saved to: {config['output_dir']}")
+    print("DPO training complete!")
+    print(f"Policy adapter saved to: {config['output_dir']}")
     print("=" * 60 + "\n")
 
     print("Next steps:")
-    print("1. Run inference: python 03_src/run_inference.py")
-    print("2. Merge LoRA: python 03_src/merge_lora.py")
-    print("3. Evaluate A/B: python 03_src/eval/evaluate.py --prompts_path 02_data/eval/eval_prompts.jsonl")
+    print("1. Run inference with adapter: python 02_src/run_inference.py --adapter_path 04_models/adapters/output_dpo")
+    print("2. Merge LoRA: python 02_src/merge_lora.py --adapter_path 04_models/adapters/output_dpo --output_path 04_models/merged/merged_model_dpo")
 
 
 if __name__ == "__main__":

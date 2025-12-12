@@ -2,7 +2,7 @@
 Run inference with the fine-tuned Llama-3.2 model (base + LoRA adapters).
 
 Usage:
-    python 03_src/run_inference.py --adapter_path 04_models/adapters/output_llama32_sft
+    python 02_src/run_inference.py --adapter_path 04_models/adapters/output_dpo
 """
 
 import argparse
@@ -13,8 +13,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ADAPTER_PATH = REPO_ROOT / "04_models" / "adapters" / "output_llama32_sft"
-FALLBACK_OLD_ADAPTER = REPO_ROOT / "output_llama32_sft"
+DEFAULT_ADAPTER_PATH = REPO_ROOT / "04_models" / "adapters" / "output_dpo"
+FALLBACK_OLD_ADAPTER = REPO_ROOT / "output_dpo"
 
 
 def resolve_adapter_path(adapter_path: Path | str | None) -> Path:
@@ -105,7 +105,7 @@ def generate_response(
 def main():
     parser = argparse.ArgumentParser(description="Run inference with QLoRA adapters.")
     parser.add_argument("--base_model", type=str, default="meta-llama/Llama-3.2-1B-Instruct")
-    parser.add_argument("--adapter_path", type=str, default=None, help="Path to adapter dir (defaults to 04_models/adapters/output_llama32_sft).")
+    parser.add_argument("--adapter_path", type=str, default=None, help="Path to adapter dir (defaults to 04_models/adapters/output_dpo).")
     parser.add_argument("--load_in_4bit", action="store_true", help="Use 4-bit quantization.")
     parser.add_argument("--max_new_tokens", type=int, default=256)
     parser.add_argument("--temperature", type=float, default=0.7)

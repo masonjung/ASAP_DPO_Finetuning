@@ -8,9 +8,9 @@ What it does:
 - Prints a small before/after summary table.
 
 Usage:
-    python 03_src/eval/evaluate.py ^
-        --prompts_path 02_data/eval/eval_prompts.jsonl ^
-        --adapter_path 04_models/adapters/output_llama32_sft ^
+    python 02_src/eval/evaluate.py ^
+        --prompts_path 01_data/eval/eval_prompts.jsonl ^
+        --adapter_path 04_models/adapters/output_dpo ^
         --base_model meta-llama/Llama-3.2-1B-Instruct
 
 Notes:
@@ -31,9 +31,9 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_PROMPTS = REPO_ROOT / "02_data" / "eval" / "eval_prompts.jsonl"
-DEFAULT_ADAPTER_PATH = REPO_ROOT / "04_models" / "adapters" / "output_llama32_sft"
-FALLBACK_OLD_ADAPTER = REPO_ROOT / "output_llama32_sft"
+DEFAULT_PROMPTS = REPO_ROOT / "01_data" / "eval" / "eval_prompts.jsonl"
+DEFAULT_ADAPTER_PATH = REPO_ROOT / "04_models" / "adapters" / "output_dpo"
+FALLBACK_OLD_ADAPTER = REPO_ROOT / "output_dpo"
 
 
 def resolve_adapter_path(adapter_path: Path | str | None) -> Path | None:
@@ -248,7 +248,7 @@ def save_outputs_jsonl(path: Path, rows: list[dict]):
 def main():
     parser = argparse.ArgumentParser(description="A/B evaluate base vs QLoRA-tuned model.")
     parser.add_argument("--prompts_path", type=str, default=str(DEFAULT_PROMPTS), help="JSONL with 'instruction' and optional 'reference' fields.")
-    parser.add_argument("--adapter_path", type=str, default=None, help="Path to LoRA adapter directory (defaults to 04_models/adapters/output_llama32_sft).")
+    parser.add_argument("--adapter_path", type=str, default=None, help="Path to LoRA adapter directory (defaults to 04_models/adapters/output_dpo).")
     parser.add_argument("--base_model", type=str, default="meta-llama/Llama-3.2-1B-Instruct", help="Base model name or path.")
     parser.add_argument("--load_in_4bit", action="store_true", help="Use 4-bit quantization for evaluation.")
     parser.add_argument("--max_new_tokens", type=int, default=256, help="Generation length.")

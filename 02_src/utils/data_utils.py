@@ -11,14 +11,21 @@ from typing import Optional
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer
 
-from .formatting import get_formatting_func
+from .formatting import get_dpo_formatting_func, get_formatting_func
 
 
 def _filter_empty(example: dict) -> bool:
-    """Drop rows with empty instruction or response."""
+    """Drop rows with empty instruction or target (response or chosen)."""
     instruction = str(example.get("instruction", "")).strip()
-    response = str(example.get("response", "")).strip()
-    return bool(instruction) and bool(response)
+    target = str(example.get("response") or example.get("chosen", "")).strip()
+    return bool(instruction) and bool(target)
+
+
+def _filter_preference_row(example: dict) -> bool:
+    """Ensure preference rows have both chosen and rejected responses."""
+    chosen = str(example.get("chosen", "")).strip()
+    rejected = str(example.get("rejected", "")).strip()
+    return bool(chosen) and bool(rejected) and chosen != rejected
 
 
 def load_training_dataset(dataset_path: str, split: str = "train", max_samples: Optional[int] = None):
@@ -88,6 +95,38 @@ def prepare_dataset_for_training(
     )
 
     print(f"Dataset formatted with {len(formatted_dataset)} examples")
+    return formatted_dataset
+
+
+def prepare_dataset_for_dpo(
+    dataset,
+    dataset_name: str = "custom",
+    num_proc: Optional[int] = None,
+):
+    """
+    Prepare a dataset for DPO by formatting prompts and pairing chosen/rejected responses.
+
+    Args:
+        dataset: Hugging Face Dataset object
+        dataset_name: Name of dataset (used to select formatting function)
+        num_proc: Optional number of processes for mapping
+
+    Returns:
+        Formatted dataset ready for DPOTrainer
+    """
+    formatting_func = get_dpo_formatting_func(dataset_name)
+    print("Formatting dataset for DPO...")
+
+    dataset = dataset.filter(_filter_preference_row)
+    formatted_dataset = dataset.map(
+        formatting_func,
+        batched=True,
+        remove_columns=dataset.column_names,
+        num_proc=num_proc,
+        load_from_cache_file=False,
+    )
+
+    print(f"Dataset formatted for DPO with {len(formatted_dataset)} examples")
     return formatted_dataset
 
 

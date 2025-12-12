@@ -2,7 +2,7 @@
 Merge LoRA adapters into the base model to create a standalone fine-tuned model.
 
 Usage:
-    python 03_src/merge_lora.py --adapter_path 04_models/adapters/output_llama32_sft --output_path 04_models/merged/llama32_sft_merged
+    python 02_src/merge_lora.py --adapter_path 04_models/adapters/output_dpo --output_path 04_models/merged/llama32_dpo_merged
 """
 
 import argparse
@@ -13,9 +13,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ADAPTER_PATH = REPO_ROOT / "04_models" / "adapters" / "output_llama32_sft"
-DEFAULT_OUTPUT_PATH = REPO_ROOT / "04_models" / "merged" / "merged_model"
-FALLBACK_OLD_ADAPTER = REPO_ROOT / "output_llama32_sft"
+DEFAULT_ADAPTER_PATH = REPO_ROOT / "04_models" / "adapters" / "output_dpo"
+DEFAULT_OUTPUT_PATH = REPO_ROOT / "04_models" / "merged" / "merged_model_dpo"
+FALLBACK_OLD_ADAPTER = REPO_ROOT / "output_dpo"
 
 
 def resolve_adapter_path(adapter_path: Path | str | None) -> Path:
