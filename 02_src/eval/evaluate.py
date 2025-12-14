@@ -106,6 +106,7 @@ def load_model_and_tokenizer(base_model: str, adapter_path: Path | None, load_in
 
     if adapter_path:
         model = PeftModel.from_pretrained(model, adapter_path)
+    model.eval()
 
     tokenizer_source = adapter_path if adapter_path else base_model
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_source, trust_remote_code=True, use_fast=True)
@@ -189,7 +190,9 @@ def summarize(results: list[dict]) -> dict:
     non_empty_rate = sum(1 for r in results if r["response"].strip()) / len(results) if results else 0.0
 
     def pct(values, p):
-        return statistics.quantiles(values, n=100)[p - 1] if values else math.nan
+        if len(values) < 2:
+            return values[0] if len(values) == 1 else math.nan
+        return statistics.quantiles(values, n=100)[p - 1]
 
     summary = {
         "count": len(results),

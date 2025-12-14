@@ -1,4 +1,4 @@
-"""Prompt formatting utilities for SFT/DPO."""
+"""Prompt formatting utilities for DPO and instruction-response data."""
 
 
 def _build_instruction_block(instruction: str, context: str | None = None) -> str:
@@ -11,7 +11,7 @@ def _build_instruction_block(instruction: str, context: str | None = None) -> st
 
 def format_instruction_response(instruction: str, response: str, context: str | None = None) -> str:
     """
-    Format an instruction-response pair into the standard SFT template.
+    Format an instruction-response pair into the standard DPO-style template.
 
     Args:
         instruction: The input instruction/question
@@ -31,7 +31,7 @@ def format_instruction_response(instruction: str, response: str, context: str | 
 
 def format_dpo_prompt(instruction: str, context: str | None = None) -> str:
     """
-    Format the prompt used by DPO. We keep the same template as SFT but leave the
+    Format the prompt used by DPO. We keep the same template but leave the
     response blank so chosen/rejected answers can be paired separately.
     """
     instruction_block = _build_instruction_block(instruction, context)
@@ -42,7 +42,7 @@ def format_dpo_prompt(instruction: str, context: str | None = None) -> str:
 
 
 def format_dolly_example(examples: dict) -> dict:
-    """Return formatted Dolly prompts for SFTTrainer."""
+    """Return formatted Dolly prompts for supervised trainer ingestion."""
     instructions = examples.get("instruction", [])
     contexts = examples.get("context", [])
     responses = examples.get("response", [])

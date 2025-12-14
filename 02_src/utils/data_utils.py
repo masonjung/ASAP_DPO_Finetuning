@@ -28,7 +28,12 @@ def _filter_preference_row(example: dict) -> bool:
     return bool(chosen) and bool(rejected) and chosen != rejected
 
 
-def load_training_dataset(dataset_path: str, split: str = "train", max_samples: Optional[int] = None):
+def load_training_dataset(
+    dataset_path: str,
+    split: str = "train",
+    max_samples: Optional[int] = None,
+    token: Optional[str] = None,
+):
     """
     Load a dataset from Hugging Face Hub or local JSONL file.
 
@@ -36,6 +41,7 @@ def load_training_dataset(dataset_path: str, split: str = "train", max_samples: 
         dataset_path: HF dataset ID or path to local JSONL
         split: Dataset split to load (default: 'train')
         max_samples: Optional cap for quick experiments
+        token: Optional Hugging Face token for gated/private datasets
 
     Returns:
         Hugging Face Dataset object
@@ -44,13 +50,22 @@ def load_training_dataset(dataset_path: str, split: str = "train", max_samples: 
         print(f"Loading local dataset from: {dataset_path}")
         rows = []
         with open(dataset_path, "r", encoding="utf-8") as f:
-            for line in f:
-                rows.append(json.loads(line))
+            for line_num, line in enumerate(f, 1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    row = json.loads(line)
+                    rows.append(row)
+                except json.JSONDecodeError as e:
+                    raise ValueError(f"Invalid JSON on line {line_num} in {dataset_path}: {e}")
+        if not rows:
+            raise ValueError(f"No valid JSON lines found in {dataset_path}")
         dataset = Dataset.from_list(rows)
         print(f"Loaded {len(dataset)} examples from local file")
     else:
         print(f"Loading dataset from Hugging Face: {dataset_path} (split={split})")
-        dataset = load_dataset(dataset_path, split=split)
+        dataset = load_dataset(dataset_path, split=split, token=token)
         print(f"Loaded {len(dataset)} examples from Hugging Face")
 
     if max_samples is not None:

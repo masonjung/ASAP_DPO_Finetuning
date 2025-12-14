@@ -56,6 +56,8 @@ def load_model_and_tokenizer(
     tokenizer = AutoTokenizer.from_pretrained(adapter_path, trust_remote_code=True, use_fast=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "right"
+    model.eval()
 
     print("Model and tokenizer loaded")
     return model, tokenizer

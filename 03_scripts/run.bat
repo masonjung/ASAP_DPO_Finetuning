@@ -64,7 +64,7 @@ echo Installing dependencies...
 pip install -r requirements.txt
 echo.
 echo Installing PyTorch with CUDA...
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 pause
 goto menu
 

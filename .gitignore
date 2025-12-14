@@ -40,8 +40,8 @@ Thumbs.db
 huggingface/
 
 # Don't ignore sample data
-!02_data/raw/sample.jsonl
-!02_data/eval/eval_prompts.jsonl
+!01_data/raw/sample.jsonl
+!01_data/eval/eval_prompts.jsonl
 
 # Jupyter
 .ipynb_checkpoints/
@@ -52,4 +52,4 @@ huggingface/
 .env.local
 
 # Secrets
-01_configs/secrets.toml
+00_configs/secrets.toml
