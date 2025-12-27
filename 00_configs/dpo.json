@@ -1,7 +1,7 @@
 {
   "model_name": "meta-llama/Llama-3.2-1B-Instruct",
-  "dataset_hf": "c:\\Users\\Minseok Jung\\Desktop\\Programming\\llama32_sft_project\\01_data\\dpo\\train.jsonl",
-  "output_dir": "c:\\Users\\Minseok Jung\\Desktop\\Programming\\llama32_sft_project\\04_models\\adapters\\output_dpo",
+  "dataset_hf": "c:\\Users\\Minseok Jung\\Desktop\\Programming\\asap_finetuning\\01_data\\dpo\\train.jsonl",
+  "output_dir": "c:\\Users\\Minseok Jung\\Desktop\\Programming\\asap_finetuning\\04_models\\adapters\\output_dpo",
   "max_seq_length": 512,
   "max_prompt_length": 256,
   "max_target_length": 256,
