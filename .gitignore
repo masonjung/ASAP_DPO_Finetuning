@@ -43,9 +43,6 @@ huggingface/
 !01_data/raw/sample.jsonl
 !01_data/eval/eval_prompts.jsonl
 
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
 
 # Environment
 .env
