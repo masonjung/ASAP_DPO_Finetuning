@@ -14,6 +14,8 @@ This project fine-tunes a small language model (SLM) using Direct Preference Opt
 - On-device DPO training with QLoRA adapters (4-bit quantization supported; faster) that does not need GPU networks.
 - Clickable workflow on Jupyter Notebook in `dpo_training.ipynb`.
 
+## Hardware check
+- Please consider the hardware restriction using `01_data/gpu_check.py` or the GPU check block of the `dpo_training.ipynb`.
 
 ## Repository Layout
 - `00_configs/` - training configs and secrets.
@@ -46,10 +48,8 @@ python 02_src/eval/evaluate.py --prompts_path 01_data/eval/eval_prompts.jsonl --
 python 02_src/merge_lora.py --adapter_path 04_models/adapters/output_dpo --output_path 04_models/merged/merged_model_dpo
 ```
 
-### Windows Helper
-```bat
-03_scripts\run.bat
-```
+
+
 
 ## Data Format
 Training data is JSONL with preference pairs:
@@ -89,9 +89,8 @@ token = "hf_..."
 4. Monitor logs: `python 02_src/monitor_training.py`.
 
 ### Evaluation
-```bash
-python 02_src/eval/evaluate.py --prompts_path 01_data/eval/eval_prompts.jsonl --adapter_path 04_models/adapters/output_dpo
-```
+1. Small - no evaluation
+2. Larger - need an evaluation
 
 ### Inference
 ```bash
