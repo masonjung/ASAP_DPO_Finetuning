@@ -47,13 +47,15 @@ Training data is JSONL with preference pairs:
 In this project, we use the paired dataset for domain vocabulary training. For example, 'DP' from Dynamic Positioning', that is defined as a computer-controlled system that automatically maintains a vessel's position and heading using its own propellers and thrusters, eliminating the need for anchors. In contrast, the term 'DP' is Demographic Parity in AI fairness research and the abbreviation has a different meaning.
 
 ## Configuration
+You need to get approval from the model usage agreement. For example, to use Llama family, you need to get approval via "LLAMA {number} COMMUNITY LICENSE AGREEMENT".
+
 We suggest to use the token file `00_configs/secrets.toml` for HF token:
 ```toml
 [huggingface]
 token = "hf_..."
 ```
 
-you can start with the givne `00_configs/dpo.json` based on your needs:
+you can start with the given `00_configs/dpo.json` based on your needs:
 - `model_name`: base model (default Llama-3.2-1B-Instruct. If you would like to use a larger model, you may need remote GPUs).
 - `dataset_hf`: local JSONL path. This could be switched to another dataset.
 - `output_dir`: adapter output path.
@@ -74,13 +76,12 @@ Set `model_name` in `00_configs/dpo.json` for training.
 Example (config snippet):
 ```json
 {
-  "model_name": "meta-llama/Llama-3.3-70B-Instruct"
+  "model_name": "microsoft/Phi-4-mini-instruct"
 }
 ```
 
 Common alternatives:
 - `Qwen/Qwen3-4B`
-- `microsoft/Phi-4-mini-instruct`
 - `google/gemma-2b-it`
 
 Notes:
