@@ -1,4 +1,4 @@
-﻿# DPO + QLoRA Fine Tuning for Oil & Gas Domain Grounding
+﻿# DPO + QLoRA Fine-Tuning for Oil & Gas Domain Grounding
 
 ## Overview
 This project fine-tunes a small language model (SLM) using Direct Preference Optimization (DPO) with QLoRA adapters to ground responses in the Oil and Gas domain. Unlike other projects, you can post-train the SLM locally with the given small domain dataset for hands-on-experiment. This AMP is a great starting point to train your private AI with DPO on a laptop or desktop without a remote-GPU. Start with your private model quickly and extend the AMP with larger models, larger datasets, and additional GPUs. This project require GPU for Compute Unified Device Architecture (CUDA) usage and Hugging Face (HF) to load an LLM. 
@@ -6,16 +6,16 @@ This project fine-tunes a small language model (SLM) using Direct Preference Opt
 
 ## Project Workflow
 1. Edit configurations in `00_configs/dpo.json`.
-2. Prepare a dataset for preference pairs in JSONL (PREPARED; instruction, chosen, rejected) in `01_data/dpo/train.jsonl`.
-3. Run DPO training and merge the adapter with `dpo_training.ipynb` 
+2. Prepare a dataset for preference pairs in JSONL (Prepared; instruction, chosen, rejected) in `01_data/dpo/train.jsonl`.
+3. Run DPO training and merge the adapter with `dpo_training.ipynb`. 
 4. Optional: run the training on `02_src/train_dpo.py`, which serves for the back-end of (3). 
 
 ## Key Features
-- On-device DPO training with QLoRA adapters (4-bit quantization supported; faster) that does not need GPU networks.
-- Clickable workflow on Jupyter Notebook in `dpo_training.ipynb`.
+- On-device DPO training with QLoRA adapters (4-bit quantization supported; faster) that does not need a remote GPU.
+- Hands-on workflow on Jupyter Notebook in `dpo_training.ipynb`.
 
 ## Hardware check
-- Please consider the hardware restriction using `01_data/gpu_check.py` or the GPU check block of the `dpo_training.ipynb`.
+- Please consider the hardware condition using `01_data/gpu_check.py` or the GPU check block of the `dpo_training.ipynb`.
 
 ## Repository Layout
 - `00_configs/` - training configs and secrets.
@@ -36,82 +36,61 @@ This project fine-tunes a small language model (SLM) using Direct Preference Opt
 ### Project Setup
 ```bash
 pip install -r requirements.txt
-# Optional: CUDA wheels (example)
 pip install torch --index-url https://download.pytorch.org/whl/cu124
 ```
-
-### Quick Start
-```bash
-python 02_src/train_dpo.py --config 00_configs/dpo.json
-python 02_src/run_inference.py --adapter_path 04_models/adapters/output_dpo
-python 02_src/eval/evaluate.py --prompts_path 01_data/eval/eval_prompts.jsonl --adapter_path 04_models/adapters/output_dpo
-python 02_src/merge_lora.py --adapter_path 04_models/adapters/output_dpo --output_path 04_models/merged/merged_model_dpo
-```
-
-
-
 
 ## Data Format
 Training data is JSONL with preference pairs:
 ```json
-{"instruction": "...", "chosen": "...", "rejected": "...", "context": "..."}
+{"instruction": "...", "chosen": "...", "rejected": "..."}
 ```
-
-If you start with reward-scored responses:
-```json
-{"instruction": "...", "response": "...", "reward": 1.0}
-```
-Convert with:
-```bash
-python 03_scripts/convert_reward_to_dpo.py --input 01_data/raw/sample.jsonl --output 01_data/dpo/train.jsonl
-```
+In this project, we use the paired dataset for domain vocabulary training. For example, 'DP' from Dynamic Positioning', that is defined as a computer-controlled system that automatically maintains a vessel's position and heading using its own propellers and thrusters, eliminating the need for anchors. In contrast, the term 'DP' is Demographic Parity in AI fairness research and the abbreviation has a different meaning.
 
 ## Configuration
-Edit `00_configs/dpo.json`:
-- `model_name`: base model (default Llama-3.2-1B-Instruct).
-- `dataset_hf`: local JSONL path or Hugging Face dataset ID.
-- `output_dir`: adapter output path.
-- `load_in_4bit`: enable QLoRA quantization.
-- `dpo_beta`, `learning_rate`, `num_train_epochs`, and more.
-
-Optional token file `00_configs/secrets.toml`:
+We suggest to use the token file `00_configs/secrets.toml` for HF token:
 ```toml
 [huggingface]
 token = "hf_..."
 ```
 
+you can start with the givne `00_configs/dpo.json` based on your needs:
+- `model_name`: base model (default Llama-3.2-1B-Instruct. If you would like to use a larger model, you may need remote GPUs).
+- `dataset_hf`: local JSONL path. This could be switched to another dataset.
+- `output_dir`: adapter output path.
+- `load_in_4bit`: enable QLoRA quantization.
+- `dpo_beta`, `learning_rate`, `num_train_epochs`, and more hyperparameters are adjustable.
+
+
 ## Usage Guide
 
-### Fine-Tuning Workflow
-1. Prepare or convert data to DPO format.
-2. Update `00_configs/dpo.json` for model, data, and output paths.
-3. Run training: `python 02_src/train_dpo.py --config 00_configs/dpo.json`.
-4. Monitor logs: `python 02_src/monitor_training.py`.
-
 ### Evaluation
-1. Small - no evaluation
-2. Larger - need an evaluation
-
-### Inference
-```bash
-python 02_src/run_inference.py --adapter_path 04_models/adapters/output_dpo
-```
-
-### Merge LoRA
-```bash
-python 02_src/merge_lora.py --adapter_path 04_models/adapters/output_dpo --output_path 04_models/merged/merged_model_dpo
-```
+Since this project focuses on fine-tuning for a domain abbreviation and SLM that shows a worse performance compared to LLM, we did not integrate a general evaluation metrics. If you plan to expand the domain with greater scale with larger datasets, you should bring up evaluation metrics to measure an overall performance.
 
 ## Advanced Customization
 
 ### Swap Base Models
-Update `model_name` in `00_configs/dpo.json` or pass `--base_model` to inference or merge scripts.
+Set `model_name` in `00_configs/dpo.json` for training.
+
+Example (config snippet):
+```json
+{
+  "model_name": "meta-llama/Llama-3.3-70B-Instruct"
+}
+```
+
+Common alternatives:
+- `Qwen/Qwen3-4B`
+- `microsoft/Phi-4-mini-instruct`
+- `google/gemma-2b-it`
+
+Notes:
+- Gated models require an HF token and accepted model terms.
+- Larger models typically need smaller `per_device_train_batch_size` or `max_seq_length`; keep `load_in_4bit: true` for VRAM.
+- If the model uses different module names, update `lora_target_modules` accordingly.
+
 
 ### Swap Datasets
-Point `dataset_hf` at another JSONL or Hugging Face dataset. Ensure it has `instruction`, `chosen`, and `rejected` fields or adapt in `02_src/utils/formatting.py`.
+Point `dataset_hf` at another JSONL or Hugging Face dataset. Ensure it has `instruction`, `chosen`, and `rejected`.
 
 ### Prompt Templates
-Adjust templates in `02_src/utils/formatting.py` for domain-specific formatting.
-
-## Notebook Walkthrough
-`dpo_training.ipynb` mirrors the training pipeline if you prefer a notebook flow.
+Adjust templates in `02_src/utils/formatting.py` for a tailored formatting.
