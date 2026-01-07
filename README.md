@@ -1,4 +1,9 @@
-﻿# DPO + QLoRA Fine-Tuning for Oil & Gas Domain Grounding
+
+<div align="center">
+  <img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/214f57d1-4637-4bd5-8e0b-032c1a1f7d7a" />
+</div>
+ 
+ # DPO + QLoRA Fine-Tuning for Oil & Gas Domain Grounding
 
 ## Overview
 This project fine-tunes a small language model (SLM) using Direct Preference Optimization (DPO) with QLoRA adapters to ground responses in the Oil and Gas domain. Unlike other projects, you can post-train the SLM locally with the given small domain dataset for hands-on-experiment. This AMP is a great starting point to train your private AI with DPO on a laptop or desktop without a remote-GPU. Start with your private model quickly and extend the AMP with larger models, larger datasets, and additional GPUs. This project require GPU for Compute Unified Device Architecture (CUDA) usage and Hugging Face (HF) to load an LLM. 
