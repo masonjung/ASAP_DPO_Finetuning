@@ -1,0 +1,21 @@
+# .project-metadata.yaml
+name: ASAP On-device DPO Finetuning
+description: On-device DPO + QLoRA fine-tuning pipeline to ground a SLM in oil-and-gas jargons using constrative learning.
+author: Minseok Jung (Cloudera Inc.)
+specification_version: 1.0
+prototype_version: 1.0
+date: "2026-01-27"
+
+runtimes:
+  - editor: JupyterLab
+    kernel: Python 3.10
+    edition: Standard
+
+tasks:
+  - type: run_session
+    name: Install dependencies
+    script: pip install requirements.txt
+    short_summary: >-
+      Install dependencies, set environment variables, and upload data
+    cpu: 2
+    memory: 8

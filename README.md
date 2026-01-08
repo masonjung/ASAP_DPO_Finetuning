@@ -20,7 +20,7 @@ This project fine-tunes a small language model (SLM) using Direct Preference Opt
 - Hands-on workflow on Jupyter Notebook in `dpo_training.ipynb`.
 
 ## Hardware check
-- Please consider the hardware condition using `01_data/gpu_check.py` or the GPU check block of the `dpo_training.ipynb`.
+- Please consider the hardware condition using `01_data/gpu_check.py` or the GPU check block of the `dpo_training.ipynb`. You need enough memory to run this code (e.g.,mem_free/total_GB: 3.5/4.3)
 
 ## Repository Layout
 - `00_configs/` - training configs and secrets.
