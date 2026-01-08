@@ -1,7 +1,8 @@
  # DPO + QLoRA Fine-Tuning for Oil & Gas Domain Grounding
 [![Reproducible](https://img.shields.io/badge/Reproducible-Yes-success.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/masonjung/ASAP_DPO_Finetuning.svg?style=social&label=Star)](https://github.com/masonjung/ASAP_DPO_Finetuning)
+[![Stars](https://img.shields.io/github/stars/masonjung/ASAP_DPO_Finetuning?style=social)](https://github.com/masonjung/ASAP_DPO_Finetuning/stargazers)
+
 
 <div align="center">
   <img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/214f57d1-4637-4bd5-8e0b-032c1a1f7d7a" />
