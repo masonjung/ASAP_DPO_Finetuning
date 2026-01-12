@@ -1,5 +1,3 @@
-"""Utils package for Llama-3.2 DPO fine-tuning."""
-
 from .formatting import (
     format_instruction_response,
     format_dolly_example,

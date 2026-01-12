@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ASAP_finetuning"
+name = "asap_finetuning"
 version = "1.1.0"
-description = "DPO + QLoRA fine-tuning pipeline for oil-and-gas domain grounding."
+description = "DPO + QLoRA fine-tuning for oil-and-gas abbretivation grounding on local device."
 authors = [{name = "Minseok Jung", email = "minseok.jung@cloudera.com"}]
 dependencies = [
     "transformers",

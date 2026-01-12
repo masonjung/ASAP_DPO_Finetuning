@@ -4,9 +4,9 @@ entries:
   - title: ASAP On-device DPO Finetuning
     label: asap_finetuning
     short_description: |
-      On-device DPO + QLoRA fine-tuning pipeline to ground a SLM in oil-and-gas jargons using constrative learning.
+      On-device DPO + QLoRA fine-tuning to ground a SLM in oil-and-gas jargons.
     long_description: |
-      This AMP fine-tunes a small instruction model (e.g., Llama-3.2-1B) with Direct Preference Optimization and 4-bit QLoRA adapters using a local JSONL dataset of oil and gas preference pairs.
+      This AMP fine-tunes a small instruction model (e.g., Llama-3.2-1B) with Direct Preference Optimization and 4-bit QLoRA adapters using a local small dataset of oil and gas preference pairs.
       The hyperparameters are noted in `00_configs/dpo.json`. The Jupyter notebook workflow simplifies the implementation.
       The goal is to enable a training on laptop or desktop for a domain grounding before scaling to larger models, datasets, or remote GPUs.
       

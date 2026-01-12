@@ -1,4 +1,4 @@
- # DPO + QLoRA Fine-Tuning for Oil & Gas Domain Grounding
+ # DPO + QLoRA Fine-Tuning for Oil & Gas Abbretivation Grounding
 [![Reproducible](https://img.shields.io/badge/Reproducible-Yes-success.svg)](#)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/masonjung/ASAP_DPO_Finetuning?style=social)](https://github.com/masonjung/ASAP_DPO_Finetuning/stargazers)
