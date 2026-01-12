@@ -40,13 +40,12 @@ This project fine-tunes a small language model (SLM) using Direct Preference Opt
 ### Prerequisites
 - Python 3.10+ (match your PyTorch/CUDA build).
 - CUDA-capable GPU recommended (8GB VRAM typical for LLM of 1B + QLoRA).
-- HF token for gated models (set `HF_TOKEN` or `00_configs/secrets.toml`).
+- HF token for gated models (set `HF_TOKEN` or `00_configs/secrets.toml`). 
 - Policy consent on HF to use `meta-llama/Llama-3.2-1B-Instruct` model 
 
 ### Project Setup
 ```bash
 pip install -r requirements.txt
-pip install torch --index-url https://download.pytorch.org/whl/cu124
 ```
 
 ## Data Format
@@ -62,7 +61,7 @@ You need to get approval from the model usage agreement. For example, to use Lla
 We suggest to use the token file `00_configs/secrets.toml` for HF token:
 ```toml
 [huggingface]
-token = "hf_..."
+token = "hf_betrue123..."
 ```
 
 you can start with the given `00_configs/dpo.json` based on your needs:

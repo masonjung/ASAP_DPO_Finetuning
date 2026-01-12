@@ -1,9 +1,3 @@
-"""
-Dataset loading and tokenization utilities.
-
-Handles loading from HF Hub or local JSONL, basic cleaning, and formatting.
-"""
-
 import json
 import os
 from typing import Optional
@@ -34,18 +28,7 @@ def load_training_dataset(
     max_samples: Optional[int] = None,
     token: Optional[str] = None,
 ):
-    """
-    Load a dataset from Hugging Face Hub or local JSONL file.
 
-    Args:
-        dataset_path: HF dataset ID or path to local JSONL
-        split: Dataset split to load (default: 'train')
-        max_samples: Optional cap for quick experiments
-        token: Optional Hugging Face token for gated/private datasets
-
-    Returns:
-        Hugging Face Dataset object
-    """
     if os.path.exists(dataset_path):
         print(f"Loading local dataset from: {dataset_path}")
         rows = []
@@ -86,19 +69,7 @@ def prepare_dataset_for_training(
     dataset_name: str = "custom",
     num_proc: Optional[int] = None,
 ):
-    """
-    Prepare a dataset for training by formatting and tokenizing.
 
-    Args:
-        dataset: Hugging Face Dataset object
-        tokenizer: Tokenizer to use
-        max_seq_length: Maximum sequence length
-        dataset_name: Name of dataset (used to select formatting function)
-        num_proc: Optional number of processes for mapping
-
-    Returns:
-        Formatted dataset ready for training
-    """
     formatting_func = get_formatting_func(dataset_name)
     print("Formatting dataset...")
 
@@ -118,17 +89,7 @@ def prepare_dataset_for_dpo(
     dataset_name: str = "custom",
     num_proc: Optional[int] = None,
 ):
-    """
-    Prepare a dataset for DPO by formatting prompts and pairing chosen/rejected responses.
 
-    Args:
-        dataset: Hugging Face Dataset object
-        dataset_name: Name of dataset (used to select formatting function)
-        num_proc: Optional number of processes for mapping
-
-    Returns:
-        Formatted dataset ready for DPOTrainer
-    """
     formatting_func = get_dpo_formatting_func(dataset_name)
     print("Formatting dataset for DPO...")
 
@@ -146,16 +107,7 @@ def prepare_dataset_for_dpo(
 
 
 def get_tokenizer(model_name: str, max_seq_length: int = 512, token: str | None = None):
-    """
-    Load and configure tokenizer for training.
 
-    Args:
-        model_name: Name of the model (used to load tokenizer)
-        max_seq_length: Maximum sequence length
-
-    Returns:
-        Configured tokenizer
-    """
     print(f"Loading tokenizer for: {model_name}")
 
     tokenizer = AutoTokenizer.from_pretrained(

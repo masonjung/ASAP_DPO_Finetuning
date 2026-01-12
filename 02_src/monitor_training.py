@@ -1,10 +1,3 @@
-"""
-Monitor training progress by tailing the logs.
-
-Usage:
-    python 02_src/monitor_training.py [optional_log_path]
-"""
-
 import sys
 import time
 from pathlib import Path

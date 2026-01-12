@@ -1,10 +1,3 @@
-"""
-Run inference with the fine-tuned Llama-3.2 model (base + LoRA adapters).
-
-Usage:
-    python 02_src/run_inference.py --adapter_path 04_models/adapters/output_dpo
-"""
-
 import argparse
 from pathlib import Path
 
