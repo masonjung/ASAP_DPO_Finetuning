@@ -10,7 +10,7 @@ bitsandbytes==0.43.3
 # scipy>=1.11.0
 
 # PyTorch (install separately if needed)
-torch==2.4.1+cu124
+torch==2.4.1
 
 # Utilities
 numpy>=1.24.0

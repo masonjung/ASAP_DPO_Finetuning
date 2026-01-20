@@ -19,7 +19,6 @@ runs/
 *.safetensors
 
 # Logs
-05_logs/
 *.log
 wandb/
 tensorboard/
