@@ -9,7 +9,7 @@ date: "2026-01-21"
 runtimes:
   - editor: JupyterLab
     kernel: Python 3.10
-    edition: Standard
+    edition: NVIDIA GPU
 
 tasks:
   - type: run_session
@@ -19,3 +19,4 @@ tasks:
       Install dependencies, set environment variables, and upload data
     cpu: 2
     memory: 8
+    gpu: 1
