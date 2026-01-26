@@ -13,6 +13,31 @@
 ## Overview
 This project fine-tunes a small language model (SLM) using Direct Preference Optimization (DPO) with QLoRA adapters to ground responses in the Oil and Gas domain. Unlike other projects, you can post-train the SLM locally with the given small domain dataset for hands-on-experiment. This AMP is a great starting point to train your private AI with DPO on a laptop or desktop without a remote-GPU. Start with your private model quickly and extend the AMP with larger models, larger datasets, and additional GPUs. This project require GPU for Compute Unified Device Architecture (CUDA) usage and Hugging Face (HF) to load an LLM. 
 
+## Why DPO?
+
+When should you use DPO instead of Supervised Fine-Tuning (SFT)?
+
+| Method | Best For | Data Format |
+|--------|----------|-------------|
+| **SFT** | Teaching the model *what* to say | Input → Correct output |
+| **DPO** | Teaching the model *which response is better* | Input → Preferred vs Rejected |
+
+**Use DPO when:**
+- You want to correct terminology preferences ("use 'DP' for Dynamic Positioning, not Demographic Parity")
+- You need to adjust tone, style, or formatting behavior
+- You have examples of good vs bad responses, not just good responses
+- You're aligning model behavior rather than adding new knowledge
+
+**Use SFT when:**
+- You're teaching the model new domain knowledge
+- You have high-quality instruction-response pairs
+- There's a single "correct" answer for each input
+
+**Why DPO over RLHF?**
+
+Traditional RLHF requires training a separate reward model, then using reinforcement learning (PPO) to optimize against it. This is complex, unstable, and compute-intensive. DPO achieves equivalent results with a simple classification loss on preference pairs—no reward model, no RL loop, and significantly easier to tune.
+
+This makes DPO ideal for on-device fine-tuning where computational resources are limited.
 
 ## Project Workflow
 1. Edit configurations in `00_configs/dpo.json`.
