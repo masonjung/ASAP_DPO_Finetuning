@@ -38,10 +38,6 @@ Thumbs.db
 .cache/
 huggingface/
 
-# Don't ignore sample data
-!01_data/raw/sample.jsonl
-!01_data/eval/eval_prompts.jsonl
-
 
 # Environment
 .env
