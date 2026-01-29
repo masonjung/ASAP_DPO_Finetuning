@@ -14,7 +14,7 @@ runtimes:
 tasks:
   - type: run_session
     name: Install dependencies
-    script: pip install requirements.txt
+    script: 04_installer/install_requirements.py
     short_summary: >-
       Install dependencies, set environment variables, and upload data
     cpu: 2
