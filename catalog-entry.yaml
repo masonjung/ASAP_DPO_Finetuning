@@ -25,7 +25,7 @@ entries:
     image_path: "https://github.com/user-attachments/assets/214f57d1-4637-4bd5-8e0b-032c1a1f7d7a"
     tags:
       - Finetuning
-      - Small Language Models
+      - Small Language Model
       - On-device Learning
       - Direct Preference Optimization
     git_url: "https://github.com/masonjung/ASAP_DPO_Finetuning"
