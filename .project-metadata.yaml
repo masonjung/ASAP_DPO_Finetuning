@@ -16,7 +16,7 @@ tasks:
     name: Install dependencies
     script: 04_installer/install_requirements.py
     short_summary: >-
-      Install dependencies, set environment variables, and upload data
+      Install dependencies, set environment variables, and upload data.
     cpu: 2
     memory: 8
     gpu: 1
