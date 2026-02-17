@@ -4,10 +4,19 @@
 [![Stars](https://img.shields.io/github/stars/masonjung/ASAP_DPO_Finetuning?style=social)](https://github.com/masonjung/ASAP_DPO_Finetuning/stargazers)
 
 
+<p align="center">
+  <img width="370" height="113" alt="image" src="https://github.com/user-attachments/assets/2e791ed8-92ac-4f26-b096-bfd1f38869d3" />
+</p>
+
+
 <div align="center">
   <img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/214f57d1-4637-4bd5-8e0b-032c1a1f7d7a" />
 </div>
- 
+
+
+<p align="center">
+  Cloudera AMP: https://cloudera.github.io/Applied-ML-Prototypes/#/community
+</p>
 
 
 ## Overview
